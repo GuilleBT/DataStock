@@ -1,5 +1,6 @@
 package es.iesisidra.datastock.ui;
 
+import es.iesisidra.datastock.servicio.ConsultaProductoServicio;
 import es.iesisidra.datastock.servicio.ExploradorFicherosServicio;
 import es.iesisidra.datastock.servicio.ImportadorJsonServicio;
 import es.iesisidra.datastock.servicio.Inventario;
@@ -16,6 +17,7 @@ public class MenuPrincipal {
     private final Inventario inventario;
     private final ExploradorFicherosServicio exploradorServicio = new ExploradorFicherosServicio();
     private final ImportadorJsonServicio importadorJsonServicio = new ImportadorJsonServicio();
+    private final ConsultaProductoServicio consultaServicio = new ConsultaProductoServicio();
 
     /** @param inventario colección común de productos de esta ejecución. */
     public MenuPrincipal(Inventario inventario) { this.inventario = inventario; }
@@ -64,9 +66,20 @@ public class MenuPrincipal {
             System.out.println("0. Volver al menú principal");
             opcion = LectorConsola.leerOpcion("Selecciona una opción: ", 0, 3);
             switch (opcion) {
-                case 1 -> pendiente("RF-FIC-04 · Listar productos");
-                case 2 -> pendiente("RF-FIC-04 · Buscar por código");
-                case 3 -> pendiente("RF-FIC-04 · Buscar por nombre");
+                case 1 -> {
+                    consultaServicio.listarTodos(inventario.getProductos());
+                    LectorConsola.pausar();
+                }
+                case 2 -> {
+                    String codigo = LectorConsola.leerTexto("Introduce el código a buscar: ");
+                    consultaServicio.buscarPorCodigo(codigo, inventario.getProductos());
+                    LectorConsola.pausar();
+                }
+                case 3 -> {
+                    String nombre = LectorConsola.leerTexto("Introduce el texto a buscar en el nombre: ");
+                    consultaServicio.buscarPorNombre(nombre, inventario.getProductos());
+                    LectorConsola.pausar();
+                }
                 case 0 -> { }
                 default -> throw new IllegalStateException("Opción inesperada");
             }
