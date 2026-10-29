@@ -1,6 +1,7 @@
 package es.iesisidra.datastock.ui;
 
 import es.iesisidra.datastock.servicio.ConsultaProductoServicio;
+import es.iesisidra.datastock.servicio.ExportadorInventarioServicio;
 import es.iesisidra.datastock.servicio.ExploradorFicherosServicio;
 import es.iesisidra.datastock.servicio.ImportadorJsonServicio;
 import es.iesisidra.datastock.servicio.ImportadorXmlServicio;
@@ -20,6 +21,7 @@ public class MenuPrincipal {
     private final ImportadorJsonServicio importadorJsonServicio = new ImportadorJsonServicio();
     private final ImportadorXmlServicio importadorXmlServicio = new ImportadorXmlServicio();
     private final ConsultaProductoServicio consultaServicio = new ConsultaProductoServicio();
+    private final ExportadorInventarioServicio exportadorServicio = new ExportadorInventarioServicio();
 
     /** @param inventario colección común de productos de esta ejecución. */
     public MenuPrincipal(Inventario inventario) { this.inventario = inventario; }
@@ -97,8 +99,16 @@ public class MenuPrincipal {
             System.out.println("0. Volver al menú principal");
             opcion = LectorConsola.leerOpcion("Selecciona una opción: ", 0, 2);
             switch (opcion) {
-                case 1 -> pendiente("RF-FIC-05 · Exportar JSON");
-                case 2 -> pendiente("RF-FIC-05 · Exportar XML");
+                case 1 -> {
+                    String ruta = LectorConsola.leerTexto("\nIntroduce la ruta del fichero JSON de destino: ");
+                    exportadorServicio.exportarJson(ruta, inventario);
+                    LectorConsola.pausar();
+                }
+                case 2 -> {
+                    String ruta = LectorConsola.leerTexto("\nIntroduce la ruta del fichero XML de destino: ");
+                    exportadorServicio.exportarXml(ruta, inventario);
+                    LectorConsola.pausar();
+                }
                 case 0 -> { }
                 default -> throw new IllegalStateException("Opción inesperada");
             }
