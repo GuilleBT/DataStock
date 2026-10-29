@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogo>
+  <producto>
+    <codigo>WEB-006</codigo>
+    <nombre>Cámara Web Full HD</nombre>
+    <precio>-25.00</precio>
+    <stock>10</stock>
+    <categoriaId>1</categoriaId>
+    <proveedorId>1</proveedorId>
+  </producto>
+  <producto>
+    <codigo>MIC-007</codigo>
+    <nombre>Micrófono Condensador</nombre>
+    <precio>59.90</precio>
+    <stock>8</stock>
+    <categoriaId>1</categoriaId>
+    <proveedorId>1</proveedorId>
+  </producto>
+  <producto>
+    <codigo>MIC-007</codigo>
+    <nombre>Micrófono Repetido</nombre>
+    <precio>65.00</precio>
+    <stock>5</stock>
+    <categoriaId>1</categoriaId>
+    <proveedorId>1</proveedorId>
+  </producto>
+</catalogo>

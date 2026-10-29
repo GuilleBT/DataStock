@@ -3,6 +3,7 @@ package es.iesisidra.datastock.ui;
 import es.iesisidra.datastock.servicio.ConsultaProductoServicio;
 import es.iesisidra.datastock.servicio.ExploradorFicherosServicio;
 import es.iesisidra.datastock.servicio.ImportadorJsonServicio;
+import es.iesisidra.datastock.servicio.ImportadorXmlServicio;
 import es.iesisidra.datastock.servicio.Inventario;
 import es.iesisidra.datastock.util.ColoresConsola;
 import es.iesisidra.datastock.util.LectorConsola;
@@ -17,6 +18,7 @@ public class MenuPrincipal {
     private final Inventario inventario;
     private final ExploradorFicherosServicio exploradorServicio = new ExploradorFicherosServicio();
     private final ImportadorJsonServicio importadorJsonServicio = new ImportadorJsonServicio();
+    private final ImportadorXmlServicio importadorXmlServicio = new ImportadorXmlServicio();
     private final ConsultaProductoServicio consultaServicio = new ConsultaProductoServicio();
 
     /** @param inventario colección común de productos de esta ejecución. */
@@ -38,7 +40,7 @@ public class MenuPrincipal {
             switch (opcion) {
                 case 1 -> ejecutarExploracion();
                 case 2 -> ejecutarImportacionJson();
-                case 3 -> pendiente("RF-FIC-03 · Importar productos desde XML");
+                case 3 -> ejecutarImportacionXml();
                 case 4 -> menuConsultas();
                 case 5 -> menuExportaciones();
                 case 6 -> menuSerializacion();
@@ -129,6 +131,12 @@ public class MenuPrincipal {
     private void ejecutarImportacionJson() {
         String ruta = LectorConsola.leerTexto("\nIntroduce la ruta del fichero JSON: ");
         importadorJsonServicio.importar(ruta, inventario);
+        LectorConsola.pausar();
+    }
+
+    private void ejecutarImportacionXml() {
+        String ruta = LectorConsola.leerTexto("\nIntroduce la ruta del fichero XML: ");
+        importadorXmlServicio.importar(ruta, inventario);
         LectorConsola.pausar();
     }
 

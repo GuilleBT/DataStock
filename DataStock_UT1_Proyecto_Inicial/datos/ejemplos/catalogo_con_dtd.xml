@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalogo [
+  <!ELEMENT catalogo (producto+)>
+  <!ELEMENT producto (codigo, nombre, precio, stock, categoriaId, proveedorId)>
+  <!ELEMENT codigo (#PCDATA)>
+  <!ELEMENT nombre (#PCDATA)>
+  <!ELEMENT precio (#PCDATA)>
+  <!ELEMENT stock (#PCDATA)>
+  <!ELEMENT categoriaId (#PCDATA)>
+  <!ELEMENT proveedorId (#PCDATA)>
+]>
+<catalogo>
+  <producto>
+    <codigo>DTD-001</codigo>
+    <nombre>Prueba DTD</nombre>
+    <precio>10.00</precio>
+    <stock>5</stock>
+    <categoriaId>1</categoriaId>
+    <proveedorId>1</proveedorId>
+  </producto>
+</catalogo>

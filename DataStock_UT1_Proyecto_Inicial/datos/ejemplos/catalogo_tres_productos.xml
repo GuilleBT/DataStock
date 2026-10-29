@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogo>
+  <producto>
+    <codigo>MON-003</codigo>
+    <nombre>Monitor 24 pulgadas</nombre>
+    <precio>149.99</precio>
+    <stock>6</stock>
+    <categoriaId>2</categoriaId>
+    <proveedorId>2</proveedorId>
+  </producto>
+  <producto>
+    <codigo>AUR-004</codigo>
+    <nombre>Auriculares Gaming</nombre>
+    <precio>45.50</precio>
+    <stock>18</stock>
+    <categoriaId>1</categoriaId>
+    <proveedorId>1</proveedorId>
+  </producto>
+  <producto>
+    <codigo>ALF-005</codigo>
+    <nombre>Alfombrilla XXL</nombre>
+    <precio>12.00</precio>
+    <stock>50</stock>
+    <categoriaId>1</categoriaId>
+    <proveedorId>1</proveedorId>
+  </producto>
+</catalogo>
