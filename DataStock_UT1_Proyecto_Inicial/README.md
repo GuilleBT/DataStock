@@ -1,121 +1,132 @@
-# DataStock – Proyecto inicial (UT1)
+# DataStock – Práctica Integradora Fase 1 (UT1)
 
 **Módulo:** Acceso a Datos · 2.º DAM · IES Isidra de Guzmán · Curso 2026–2027  
-**Lenguaje:** Java 21 · **Construcción:** Maven · **Interfaz:** consola
+**Alumno:** Guillermo Beltrán Tabares  
+**Lenguaje:** Java 21 · **Construcción:** Apache Maven 3.9 · **Interfaz:** Consola ANSI / UTF-8  
+**Repositorio GitHub:** [https://github.com/GuilleBT/DataStock](https://github.com/GuilleBT/DataStock)
 
-## 1. ¿Qué es este proyecto?
+---
 
-DataStock es una práctica **individual e integradora** que evolucionará durante tres unidades:
+## 1. Estado de la Implementación (UT1 - Ficheros y Formatos de Intercambio)
 
-- **UT1 – Ficheros:** importar JSON/XML, consultar en memoria, exportar, serializar y desarrollar dos actividades independientes (XPath y `RandomAccessFile`).
-- **UT2 – JDBC:** incorporar MySQL, operaciones SQL y transacciones.
-- **UT3 – Componentes:** reorganizar el acceso a datos en componentes reutilizables.
+Todos los requisitos funcionales obligatorios y las actividades técnicas complementarias se encuentran **100% implementados, documentados y verificados** frente a los 34 casos de prueba de aceptación:
 
-**Esta entrega inicial solo prepara la UT1.** El código entregado **no resuelve** los requisitos funcionales: los menús muestran mensajes `[PENDIENTE]` hasta que se implementen.
+| Identificador | Requisito Funcional | Clase de Servicio / Actividad | Estado |
+|---|---|---|:---:|
+| **RF-FIC-01** | Explorar rutas, ficheros y directorios con NIO.2 | `ExploradorFicherosServicio` | ✅ Superado |
+| **RF-FIC-02** | Importar catálogo JSON con Gson y validaciones | `ImportadorJsonServicio` | ✅ Superado |
+| **RF-FIC-03** | Importar catálogo XML con DOM protegido contra XXE | `ImportadorXmlServicio` | ✅ Superado |
+| **RF-FIC-04** | Consultar y buscar productos en memoria | `ConsultaProductoServicio` | ✅ Superado |
+| **RF-FIC-05** | Exportar inventario a JSON (Gson) y XML (DOM) | `ExportadorInventarioServicio` | ✅ Superado |
+| **RF-FIC-06** | Guardar y recuperar inventario con serialización binaria (.dat) | `SerializacionServicio` | ✅ Superado |
+| **RF-FIC-07** | Consultas XML directas mediante expresiones XPath | `XPathActividad` | ✅ Superado |
+| **RF-FIC-08** | Acceso aleatorio y modificación de stock (36 bytes/registro) | `AccesoAleatorioActividad` | ✅ Superado |
 
-## 2. Requisitos previos
+---
 
-- JDK **21** instalado y seleccionado en el IDE (`java -version`).
-- Maven instalado, o un IDE con integración Maven.
-- Consola con UTF-8 para ver correctamente tildes y símbolos.
+## 2. Requisitos Previos y Entorno
 
-## 3. Cómo abrir y ejecutar
+- **Java Development Kit (JDK):** Versión 21 (LTS) de 64 bits.
+- **Gestor de dependencias:** Apache Maven 3.8 o superior.
+- **Codificación:** Terminal configurada en UTF-8 para visualización de caracteres en español y símbolos monetarios (€).
 
-1. Descomprime el ZIP y abre **la carpeta que contiene `pom.xml`** como proyecto Maven en IntelliJ IDEA, Eclipse o VS Code.
-2. Espera a que Maven descargue la dependencia Gson (requiere conexión a Internet la primera vez).
-3. Ejecuta `es.iesisidra.datastock.App` desde el IDE, o en una terminal situada en la raíz:
+---
 
+## 3. Instrucciones de Compilación y Ejecución
+
+Desde la carpeta raíz del proyecto Maven (`DataStock_UT1_Proyecto_Inicial`):
+
+### 3.1. Compilación
 ```bash
 mvn clean compile
+```
+
+### 3.2. Ejecutar la Aplicación Principal
+Inicia el menú interactivo de gestión de inventario:
+```bash
 mvn exec:java
 ```
 
-Para ejecutar las actividades complementarias (todavía pendientes de desarrollar):
+### 3.3. Ejecutar las Actividades Técnicas Complementarias
+Ambas actividades son independientes del menú principal y disponen de su propio punto de entrada:
 
-```bash
-mvn exec:java -Dexec.mainClass=es.iesisidra.datastock.complementarias.XPathActividad
-mvn exec:java -Dexec.mainClass=es.iesisidra.datastock.complementarias.AccesoAleatorioActividad
-```
+- **Actividad XPath (RF-FIC-07):**
+  ```bash
+  mvn exec:java -Dexec.mainClass=es.iesisidra.datastock.complementarias.XPathActividad
+  ```
 
-> Si el IDE muestra caracteres de control ANSI, desactiva el color al ejecutar Java con `-Ddatastock.color=false`, o configura la variable de entorno `NO_COLOR=1`.
+- **Actividad Acceso Aleatorio con RandomAccessFile (RF-FIC-08):**
+  ```bash
+  mvn exec:java -Dexec.mainClass=es.iesisidra.datastock.complementarias.AccesoAleatorioActividad
+  ```
 
-## 4. Organización del proyecto
+---
+
+## 4. Arquitectura y Organización del Código
+
+El diseño sigue una arquitectura modular en capas basada en **responsabilidad única**, separando la interacción por consola en `ui/` de la lógica de negocio y persistencia en `servicio/`:
 
 ```text
 DataStock_UT1_Proyecto_Inicial/
 ├── pom.xml
 ├── README.md
-├── .gitignore
 ├── datos/
-│   ├── ejemplos/              # JSON/XML para comenzar las pruebas
-│   └── salidas/               # Exportaciones y binarios generados
-├── material_referencia/       # Modelo relacional y script SQL para UT2
+│   ├── ejemplos/                     # Datos de prueba para importación y validación
+│   │   ├── catalogo_valido.json      # Catálogo con productos correctos
+│   │   ├── catalogo_con_errores.json # Productos con precios negativos y campos ausentes
+│   │   ├── catalogo_malformado.json  # Fichero JSON sintácticamente roto
+│   │   ├── catalogo_valido.xml       # Catálogo XML bien formado
+│   │   ├── catalogo_tres_productos.xml # 3 productos para pruebas de aceptación
+│   │   ├── catalogo_con_errores.xml  # XML con errores para informe de incidencias
+│   │   └── catalogo_con_dtd.xml      # XML con DOCTYPE malicioso para prueba XXE
+│   └── salidas/                      # Ficheros exportados, serializados y stock.bin
 └── src/main/java/es/iesisidra/datastock/
-    ├── App.java               # Punto de entrada
+    ├── App.java                      # Punto de entrada de la aplicación
     ├── modelo/
-    │   ├── Producto.java
+    │   ├── Producto.java             # Entidad del dominio (Serializable, serialVersionUID = 1L)
     │   ├── Categoria.java
     │   ├── Proveedor.java
     │   └── MovimientoStock.java
     ├── servicio/
-    │   └── Inventario.java    # Colección compartida en memoria
+    │   ├── Inventario.java           # Colección en memoria compartida (List<Producto>)
+    │   ├── ValidadorProducto.java    # Validación de negocio centralizada (principio DRY)
+    │   ├── ExploradorFicherosServicio.java   # NIO.2 (Path, Files, DirectoryStream)
+    │   ├── ImportadorJsonServicio.java       # Gson con JsonParser granular
+    │   ├── ImportadorXmlServicio.java        # DOM con protección activa contra XXE
+    │   ├── ConsultaProductoServicio.java     # Consultas con copia defensiva inalterable
+    │   ├── ExportadorInventarioServicio.java # JSON pretty printing y DOM Transformer
+    │   └── SerializacionServicio.java        # Sustitución atómica mediante ObjectStreams
     ├── ui/
-    │   └── MenuPrincipal.java # Menú principal y submenús
+    │   └── MenuPrincipal.java        # Menú interactivo y delegación limpia
     ├── util/
-    │   ├── LectorConsola.java
-    │   └── ColoresConsola.java
+    │   ├── LectorConsola.java        # Scanner centralizado con confirmaciones S/N
+    │   └── ColoresConsola.java       # Formateo visual ANSI
     └── complementarias/
-        ├── XPathActividad.java
-        └── AccesoAleatorioActividad.java
+        ├── XPathActividad.java       # 4 consultas XPath directas sobre XML
+        └── AccesoAleatorioActividad.java # RandomAccessFile O(1) con registros de 36 bytes
 ```
 
-## 5. Menús que ya aparecen
+---
 
-**Menú principal:**
+## 5. Decisiones Técnicas y Mecanismos de Seguridad
 
-```text
-1. Explorar ficheros y directorios     RF-FIC-01
-2. Importar productos desde JSON       RF-FIC-02
-3. Importar productos desde XML        RF-FIC-03
-4. Consultar productos                 RF-FIC-04
-5. Exportar productos                  RF-FIC-05
-6. Guardar y recuperar inventario      RF-FIC-06
-0. Salir
-```
+1. **Seguridad contra vulnerabilidades XXE (XML External Entity):** Tanto en `ImportadorXmlServicio` como en `XPathActividad`, la factoría `DocumentBuilderFactory` tiene activada la directiva `"http://apache.org/xml/features/disallow-doctype-decl"` y bloqueado el acceso a esquemas y DTDs externos. Si un XML incluye `<!DOCTYPE ...>`, el parser lo rechaza de inmediato (caso CP-XML-03 y CP-XPATH-05).
+2. **Prevención de Inyección XPath:** Para la búsqueda por código en `XPathActividad`, se seleccionan los nodos `/catalogo/producto` y se compara el código en Java mediante `equalsIgnoreCase()`, evitando concatenar directamente la entrada del usuario en la sintaxis XPath.
+3. **Principio de Sustitución Atómica:** En `SerializacionServicio`, la recuperación desde ficheros binarios `.dat` se realiza en una lista auxiliar temporal. Si el fichero está cortado o no es un flujo binario válido, se captura la excepción y la memoria previa queda 100% intacta (caso CP-SER-03).
+4. **Reglas de Negocio Centralizadas (DRY):** Las validaciones de código (expresión regular `^[A-Z0-9-]+$`, máx 12 caracteres), nombre (3 a 100 caracteres), precio monetario (`BigDecimal > 0`), stock (`>= 0`) e identificadores de categoría y proveedor son comunes para JSON y XML a través de `ValidadorProducto`.
+5. **Cálculo de Desplazamientos en Registros de Longitud Fija:** Cada registro en `stock.bin` ocupa exactamente 36 bytes:
+   - Código: 12 caracteres Java (UTF-16 BE) = 24 bytes (`writeChars`).
+   - Precio: 1 `double` (64 bits) = 8 bytes (`writeDouble`).
+   - Stock: 1 `int` (32 bits) = 4 bytes (`writeInt`).
+   - Offset registro $i = i \times 36$.
+   - Offset campo stock registro $i = i \times 36 + 32$. Modifica únicamente ese campo sin reescribir el resto del archivo.
 
-**4. Consultar productos:** listar, buscar por código, buscar por nombre, volver.  
-**5. Exportar productos:** exportar JSON, exportar XML, volver.  
-**6. Guardar y recuperar inventario:** guardar `.dat`, recuperar `.dat`, volver.
+---
 
-`RF-FIC-07` (XPath) y `RF-FIC-08` (`RandomAccessFile`) se ejecutan en clases independientes.
+## 6. Registro de Pruebas de Aceptación
 
-## 6. ¿Qué está hecho y qué debes programar?
-
-**Se proporciona:** clases del modelo con Javadoc y getters/setters, colección inicial vacía, navegación de menús, lectura básica de consola, colores ANSI opcionales, configuración Maven y datos de ejemplo.
-
-**Debes implementar:** la exploración de rutas, lectura/validación/importación JSON y XML, consultas, exportación, serialización y recuperación, XPath y acceso aleatorio. También debes crear las pruebas y registrar sus resultados.
-
-**Importante:** el menú solo debe **presentar opciones y delegar**. No coloques en el `switch` la lógica de ficheros, JSON, XML, validaciones o serialización. Puedes crear tus propios paquetes y clases, por ejemplo `ficheros`, `validacion`, `servicio`.
-
-La clase `Inventario` contiene la lista compartida; el alumnado debe implementar las reglas de alta, búsqueda y sustitución conforme al enunciado. **No se precargan productos:** se empieza con el inventario vacío.
-
-## 7. Reglas clave del enunciado
-
-- JSON raíz `productos` y XML raíz `catalogo` con elementos `producto`.
-- Los campos del producto son `codigo`, `nombre`, `precio`, `stock`, `categoriaId` y `proveedorId`.
-- Los códigos no se duplican, incluso si cambia el uso de mayúsculas/minúsculas.
-- Un documento mal formado o con estructura general inválida **no modifica** el inventario.
-- Si el documento es válido pero contiene registros incorrectos, se incorporan solo los válidos.
-- Importar JSON/XML **añade** productos; recuperar un `.dat` **sustituye** el inventario, tras confirmar cuando corresponda.
-- En UT1 no hay base de datos: los ID de categoría y proveedor se comprueban como enteros positivos, pero no se buscan en MySQL.
-- El fichero `stock.bin` de RF-FIC-08 es una **copia independiente**: los cambios hechos allí no actualizan la colección Java.
-
-## 8. GitHub, documentación y pruebas
-
-Crea un repositorio individual, realiza commits con mensajes significativos y mantén actualizado este README con las instrucciones reales de tu solución. Entrega el documento de pruebas cumplimentado con los casos de aceptación del enunciado y conserva ejemplos de entradas válidas e inválidas.
-
-Antes de entregar, comprueba que `mvn clean compile` funciona, que el menú no termina ante entradas inválidas y que puedes explicar el código de cada requisito. La práctica y la prueba individual se evaluarán conforme a la programación didáctica.
-
-## 9. Referencia
-
-Consulta el **enunciado DataStock UT1** facilitado en el aula virtual: es la fuente que determina el comportamiento exigido. El SQL y el diagrama del directorio `material_referencia` se facilitan para entender el proyecto completo; **no hay que conectar MySQL en UT1**.
+Los resultados detallados de la ejecución de las 34 pruebas de aceptación están recogidos en el documento Word oficial:
+`DataStock_UT1_Plantilla_Registro_Pruebas.docx`
+- **Total ejecutadas:** 34
+- **Superadas:** 34 (100 %)
+- **No superadas:** 0
