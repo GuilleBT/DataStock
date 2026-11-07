@@ -24,7 +24,7 @@ import java.util.Properties;
  */
 public final class ConexionBD {
 
-    private static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/datastock?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    private static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/datastock?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&useUnicode=true";
     private static final String DEFAULT_USER = "root";
     private static final String DEFAULT_PASSWORD = "datastock";
 
