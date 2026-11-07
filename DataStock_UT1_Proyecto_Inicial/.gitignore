@@ -7,3 +7,14 @@ target/
 # Salidas generadas por el alumnado (no se ignoran los ejemplos de entrada)
 datos/salidas/*
 !datos/salidas/.gitkeep
+
+# Credenciales y configuraciones locales (seguridad)
+db.properties
+*.properties.local
+
+# Bases de datos SQLite generadas localmente
+*.db
+*.sqlite
+datos/sqlite/*
+!datos/sqlite/.gitkeep
+

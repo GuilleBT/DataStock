@@ -1,0 +1,11 @@
+# Credenciales y configuraciones locales
+db.properties
+*.properties.local
+
+# Bases de datos SQLite
+*.db
+*.sqlite
+
+# IDEs
+.idea/
+.vscode/

@@ -1,0 +1,7 @@
+# Plantilla de configuracion de base de datos para DataStock (UT2)
+# Copia este fichero como 'db.properties' y ajusta las credenciales segun tu entorno.
+# NOTA: 'db.properties' esta excluido del control de versiones en .gitignore por seguridad.
+
+db.url=jdbc:mysql://localhost:3306/datastock?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+db.user=root
+db.password=datastock

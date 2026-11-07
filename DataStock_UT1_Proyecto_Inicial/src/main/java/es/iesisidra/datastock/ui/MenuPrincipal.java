@@ -33,14 +33,15 @@ public class MenuPrincipal {
         int opcion;
         do {
             mostrarCabecera();
-            System.out.println("1. Explorar ficheros y directorios");
-            System.out.println("2. Importar productos desde JSON");
-            System.out.println("3. Importar productos desde XML");
-            System.out.println("4. Consultar productos");
-            System.out.println("5. Exportar productos");
-            System.out.println("6. Guardar y recuperar inventario");
+            System.out.println("1. Explorar ficheros y directorios (UT1)");
+            System.out.println("2. Importar productos desde JSON (UT1)");
+            System.out.println("3. Importar productos desde XML (UT1)");
+            System.out.println("4. Consultar productos en memoria (UT1)");
+            System.out.println("5. Exportar productos (UT1)");
+            System.out.println("6. Guardar y recuperar inventario (UT1)");
+            System.out.println("7. Gestionar base de datos MySQL (UT2)");
             System.out.println("0. Salir");
-            opcion = LectorConsola.leerOpcion("Selecciona una opción: ", 0, 6);
+            opcion = LectorConsola.leerOpcion("Selecciona una opción: ", 0, 7);
             switch (opcion) {
                 case 1 -> ejecutarExploracion();
                 case 2 -> ejecutarImportacionJson();
@@ -48,6 +49,7 @@ public class MenuPrincipal {
                 case 4 -> menuConsultas();
                 case 5 -> menuExportaciones();
                 case 6 -> menuSerializacion();
+                case 7 -> new MenuJdbc(inventario).iniciar();
                 case 0 -> System.out.println(ColoresConsola.pintar("Hasta pronto.", ColoresConsola.VERDE));
                 default -> throw new IllegalStateException("Opción inesperada");
             }
@@ -57,7 +59,6 @@ public class MenuPrincipal {
     private void mostrarCabecera() {
         System.out.println(ColoresConsola.pintar("\n================================================", ColoresConsola.CIAN));
         System.out.println(ColoresConsola.pintar("         DATASTOCK - GESTIÓN DE INVENTARIO", ColoresConsola.NEGRITA));
-        System.out.println(ColoresConsola.pintar("                 FASE 1 - UT1", ColoresConsola.CIAN));
         System.out.println(ColoresConsola.pintar("================================================", ColoresConsola.CIAN));
         System.out.println(ColoresConsola.pintar("Productos en memoria: " + inventario.getProductos().size(), ColoresConsola.GRIS));
     }

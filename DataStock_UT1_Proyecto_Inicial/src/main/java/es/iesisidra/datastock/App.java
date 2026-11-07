@@ -15,5 +15,10 @@ public final class App {
         Inventario inventario = new Inventario();
         MenuPrincipal menu = new MenuPrincipal(inventario);
         menu.iniciar();
+
+        // Liberar el hilo de limpieza de MySQL Connector/J para salida limpia
+        try {
+            com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkedShutdown();
+        } catch (Throwable ignored) { }
     }
 }
