@@ -1,5 +1,8 @@
 package es.iesisidra.datastock.ui;
 
+import es.iesisidra.datastock.componentes.LectorJsonException;
+import es.iesisidra.datastock.componentes.LectorProductosJson;
+import es.iesisidra.datastock.componentes.ResultadoLecturaJson;
 import es.iesisidra.datastock.servicio.ConsultaProductoServicio;
 import es.iesisidra.datastock.servicio.ExportadorInventarioServicio;
 import es.iesisidra.datastock.servicio.SerializacionServicio;
@@ -10,6 +13,9 @@ import es.iesisidra.datastock.servicio.Inventario;
 import es.iesisidra.datastock.util.ColoresConsola;
 import es.iesisidra.datastock.util.LectorConsola;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * Presentación de menús y navegación de la primera fase de DataStock.
  * <p>Los métodos marcados TODO son puntos de partida, NO soluciones de los
@@ -19,6 +25,7 @@ import es.iesisidra.datastock.util.LectorConsola;
 public class MenuPrincipal {
     private final Inventario inventario;
     private final ExploradorFicherosServicio exploradorServicio = new ExploradorFicherosServicio();
+    private final LectorProductosJson lectorProductosJson = new LectorProductosJson();
     private final ImportadorJsonServicio importadorJsonServicio = new ImportadorJsonServicio();
     private final ImportadorXmlServicio importadorXmlServicio = new ImportadorXmlServicio();
     private final ConsultaProductoServicio consultaServicio = new ConsultaProductoServicio();
@@ -150,8 +157,43 @@ public class MenuPrincipal {
     }
 
     private void ejecutarImportacionJson() {
-        String ruta = LectorConsola.leerTexto("\nIntroduce la ruta del fichero JSON: ");
-        importadorJsonServicio.importar(ruta, inventario);
+        System.out.println(ColoresConsola.pintar("\n===== IMPORTAR PRODUCTOS DESDE JSON (COMPONENTE UT3) =====", ColoresConsola.CIAN));
+        String rutaTexto = LectorConsola.leerTexto("Introduce la ruta del fichero JSON: ");
+        if (rutaTexto == null || rutaTexto.trim().isEmpty()) {
+            System.out.println(ColoresConsola.pintar("[ERROR] La ruta del fichero no puede estar vacía.", ColoresConsola.ROJO));
+            LectorConsola.pausar();
+            return;
+        }
+
+        try {
+            Path ruta = Paths.get(rutaTexto.trim());
+            // Invocación al componente LectorProductosJson (UT3)
+            ResultadoLecturaJson resultado = lectorProductosJson.leerDetallado(ruta, inventario.getProductos());
+
+            // El menú añade al inventario los productos válidos devueltos por el componente
+            inventario.getProductos().addAll(resultado.getProductosValidos());
+
+            System.out.println("Ruta procesada: " + rutaTexto.trim());
+            System.out.println("Productos encontrados: " + resultado.getTotalEncontrados());
+            System.out.println("Importados: " + resultado.getProductosValidos().size() + " | Rechazados: " + resultado.getRechazados());
+
+            if (resultado.tieneIncidencias()) {
+                System.out.println(ColoresConsola.pintar("INCIDENCIAS:", ColoresConsola.AMARILLO));
+                for (String inc : resultado.getIncidencias()) {
+                    System.out.println(" - " + inc);
+                }
+                System.out.println(ColoresConsola.pintar("[AVISO] Importación finalizada con incidencias.", ColoresConsola.AMARILLO));
+            }
+
+            System.out.println(ColoresConsola.pintar("[OK] Se han importado " + resultado.getProductosValidos().size() + " productos válidos en el inventario.", ColoresConsola.VERDE));
+
+        } catch (LectorJsonException ex) {
+            // Error controlado en rojo sin abortar la aplicación (CP-COMP-02)
+            System.out.println(ColoresConsola.pintar("[ERROR] " + ex.getMessage(), ColoresConsola.ROJO));
+        } catch (Exception ex) {
+            System.out.println(ColoresConsola.pintar("[ERROR] Error inesperado al procesar el fichero: " + ex.getMessage(), ColoresConsola.ROJO));
+        }
+
         LectorConsola.pausar();
     }
 
