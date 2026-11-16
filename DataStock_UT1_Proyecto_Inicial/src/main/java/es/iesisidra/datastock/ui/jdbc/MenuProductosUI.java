@@ -1,5 +1,6 @@
 package es.iesisidra.datastock.ui.jdbc;
 
+import es.iesisidra.datastock.componentes.ConsultaProductoJdbc;
 import es.iesisidra.datastock.jdbc.CategoriaDAO;
 import es.iesisidra.datastock.jdbc.ProductoDAO;
 import es.iesisidra.datastock.jdbc.ProveedorDAO;
@@ -10,6 +11,7 @@ import es.iesisidra.datastock.util.LectorConsola;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Submenú interactivo para la gestión de productos (CRUD y consultas) en MySQL.
@@ -19,6 +21,7 @@ public class MenuProductosUI {
     private final ProductoDAO productoDAO = new ProductoDAO();
     private final CategoriaDAO categoriaDAO = new CategoriaDAO();
     private final ProveedorDAO proveedorDAO = new ProveedorDAO();
+    private final ConsultaProductoJdbc consultaProductoJdbc = new ConsultaProductoJdbc();
 
     /**
      * Muestra y gestiona el menú de operaciones CRUD de productos.
@@ -145,15 +148,23 @@ public class MenuProductosUI {
     }
 
     public void consultarProductoPorCodigo() {
-        System.out.println("\nCONSULTA DE PRODUCTO POR CÓDIGO");
-        System.out.println("---------------------------------------");
+        System.out.println("\nCONSULTA DE PRODUCTO POR CÓDIGO (COMPONENTE UT3)");
+        System.out.println("--------------------------------------------------");
         String codigo = LectorConsola.leerTexto("Introduce el código a buscar: ").trim().toUpperCase();
+        if (codigo.isEmpty()) {
+            System.out.println(ColoresConsola.pintar("[ERROR] Debes introducir un código para buscar.", ColoresConsola.ROJO));
+            LectorConsola.pausar();
+            return;
+        }
+
         try {
-            ProductoDetalleDTO prod = productoDAO.buscarPorCodigo(codigo);
-            if (prod == null) {
+            // Invocación al componente reutilizable ConsultaProductoJdbc (UT3)
+            Optional<ProductoDetalleDTO> prodOpt = consultaProductoJdbc.buscarPorCodigo(codigo);
+            if (prodOpt.isEmpty()) {
                 System.out.println(ColoresConsola.pintar("[AVISO] No se ha encontrado ningún producto con código '" + codigo + "'.", ColoresConsola.AMARILLO));
             } else {
-                mostrarFichaProducto(prod);
+                System.out.println(ColoresConsola.pintar("[OK] Producto encontrado:", ColoresConsola.VERDE));
+                mostrarFichaProducto(prodOpt.get());
             }
         } catch (Exception ex) {
             System.out.println(ColoresConsola.pintar("[ERROR] Error al consultar producto: " + ex.getMessage(), ColoresConsola.ROJO));

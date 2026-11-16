@@ -1,5 +1,6 @@
 package es.iesisidra.datastock.jdbc;
 
+import es.iesisidra.datastock.componentes.ConsultaProductoJdbc;
 import es.iesisidra.datastock.modelo.Producto;
 import es.iesisidra.datastock.modelo.ProductoDetalleDTO;
 
@@ -15,6 +16,8 @@ import java.util.List;
  * Operaciones de acceso a datos para la tabla {@code producto} (RF-JDBC-03 y RF-JDBC-04).
  */
 public class ProductoDAO {
+
+    private final ConsultaProductoJdbc consultaProductoJdbc = new ConsultaProductoJdbc();
 
     /**
      * Comprueba si ya existe un producto con el código indicado.
@@ -66,26 +69,10 @@ public class ProductoDAO {
 
     /**
      * Consulta un producto por su código y obtiene los datos combinados con JOIN.
+     * <p>En la UT3 delega en el componente reutilizable {@link ConsultaProductoJdbc}.</p>
      */
     public ProductoDetalleDTO buscarPorCodigo(String codigo) throws SQLException {
-        if (codigo == null || codigo.isBlank()) return null;
-        String sql = "SELECT p.codigo, p.nombre, p.precio, p.stock, " +
-                     "p.categoria_id, c.nombre AS categoria_nombre, " +
-                     "p.proveedor_id, pr.nombre AS proveedor_nombre " +
-                     "FROM producto p " +
-                     "JOIN categoria c ON p.categoria_id = c.id " +
-                     "JOIN proveedor pr ON p.proveedor_id = pr.id " +
-                     "WHERE p.codigo = ?";
-        try (Connection conn = ConexionBD.obtenerConexion();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, codigo.trim().toUpperCase());
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapearProductoDetalle(rs);
-                }
-            }
-        }
-        return null;
+        return consultaProductoJdbc.buscar(codigo);
     }
 
     /**
@@ -183,7 +170,7 @@ public class ProductoDAO {
     }
 
     /**
-     * Busca productos con existencias estrictamente inferiores a un umbral (stock < umbral).
+     * Busca productos con existencias estrictamente inferiores a un umbral (stock &lt; umbral).
      * Ordenado primero por stock ascendente y después por código.
      */
     public List<ProductoDetalleDTO> buscarPorStockInferior(int umbral) throws SQLException {
