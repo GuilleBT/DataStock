@@ -17,16 +17,14 @@ import java.util.Properties;
  * Gestor centralizado de conexiones JDBC para DataStock.
  * <p>Obtiene las credenciales de conexión siguiendo este orden de prioridad:</p>
  * <ol>
- *   <li>Fichero local {@code db.properties} (excluido de Git por seguridad).</li>
+ *   <li>Fichero local {@code db.properties} (excluido de Git por seguridad mediante .gitignore).</li>
  *   <li>Variables de entorno del sistema ({@code JDBC_URL}, {@code JDBC_USER}, {@code JDBC_PASSWORD}).</li>
- *   <li>Valores por defecto de desarrollo local.</li>
  * </ol>
+ * <p>Por principios de seguridad, nunca almacena contraseñas hardcoded en el código fuente.</p>
+ *
+ * @author Guillermo Beltrán Tabares
  */
 public final class ConexionBD {
-
-    private static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/datastock?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&useUnicode=true";
-    private static final String DEFAULT_USER = "root";
-    private static final String DEFAULT_PASSWORD = "datastock";
 
     private ConexionBD() { }
 
@@ -34,8 +32,9 @@ public final class ConexionBD {
      * Carga la configuración de conexión desde db.properties o variables de entorno.
      *
      * @return objeto {@link Properties} con las claves db.url, db.user y db.password.
+     * @throws SQLException si no se localiza ninguna configuración válida de credenciales.
      */
-    public static Properties cargarConfiguracion() {
+    public static Properties cargarConfiguracion() throws SQLException {
         Properties props = new Properties();
 
         // 1. Intentar cargar desde db.properties en rutas habituales
@@ -67,27 +66,24 @@ public final class ConexionBD {
             } catch (Exception ignored) { }
         }
 
-        // 2. Si faltan valores, buscar en variables de entorno
+        // 2. Si faltan valores, buscar en variables de entorno del sistema
         String envUrl = System.getenv("JDBC_URL");
         String envUser = System.getenv("JDBC_USER");
         String envPassword = System.getenv("JDBC_PASSWORD");
 
         if (envUrl != null && !envUrl.isBlank()) {
             props.setProperty("db.url", envUrl);
-        } else if (!props.containsKey("db.url")) {
-            props.setProperty("db.url", DEFAULT_URL);
         }
-
         if (envUser != null && !envUser.isBlank()) {
             props.setProperty("db.user", envUser);
-        } else if (!props.containsKey("db.user")) {
-            props.setProperty("db.user", DEFAULT_USER);
         }
-
         if (envPassword != null) {
             props.setProperty("db.password", envPassword);
-        } else if (!props.containsKey("db.password")) {
-            props.setProperty("db.password", DEFAULT_PASSWORD);
+        }
+
+        // 3. Validación de seguridad: no se permite la conexión si faltan las credenciales
+        if (!props.containsKey("db.url") || !props.containsKey("db.user") || !props.containsKey("db.password")) {
+            throw new SQLException("Faltan credenciales de conexión: no se encontró 'db.properties' ni las variables de entorno JDBC_URL, JDBC_USER, JDBC_PASSWORD.");
         }
 
         return props;
@@ -97,7 +93,7 @@ public final class ConexionBD {
      * Abre y devuelve una nueva conexión con la base de datos MySQL.
      *
      * @return objeto {@link Connection} listo para su uso.
-     * @throws SQLException si se produce un error al conectar.
+     * @throws SQLException si faltan credenciales o se produce un error al conectar.
      */
     public static Connection obtenerConexion() throws SQLException {
         Properties config = cargarConfiguracion();
@@ -154,6 +150,8 @@ public final class ConexionBD {
                 System.out.println(ColoresConsola.pintar("Detalle: Credenciales de acceso incorrectas (usuario o contraseña no válidos).", ColoresConsola.ROJO));
             } else if (ex.getErrorCode() == 1049) {
                 System.out.println(ColoresConsola.pintar("Detalle: La base de datos especificada no existe en el servidor.", ColoresConsola.ROJO));
+            } else if (ex.getMessage() != null && ex.getMessage().contains("Faltan credenciales")) {
+                System.out.println(ColoresConsola.pintar("Detalle: " + ex.getMessage(), ColoresConsola.ROJO));
             } else {
                 System.out.println(ColoresConsola.pintar("Detalle: " + ex.getMessage(), ColoresConsola.ROJO));
             }

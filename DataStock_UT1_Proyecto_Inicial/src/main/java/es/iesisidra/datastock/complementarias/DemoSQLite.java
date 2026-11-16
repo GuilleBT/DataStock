@@ -11,11 +11,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Actividad técnica complementaria obligatoria (RA2-b).
- * <p>Demostración práctica del funcionamiento de un Sistema Gestor de Bases
- * de Datos relacional embebido (SQLite) frente a uno cliente-servidor (MySQL).</p>
- * <p>Esta clase es ejecutable de manera independiente de los menús de DataStock:</p>
- * {@code mvn exec:java -Dexec.mainClass=es.iesisidra.datastock.complementarias.DemoSQLite}
+ * Actividad técnica complementaria.
+ * Demostración práctica del funcionamiento de un Sistema Gestor de Bases
+ * de Datos relacional embebido (SQLite) frente a uno cliente-servidor (MySQL).
+ * Esta clase es ejecutable de manera independiente de los menús de DataStock:
  */
 public class DemoSQLite {
 
