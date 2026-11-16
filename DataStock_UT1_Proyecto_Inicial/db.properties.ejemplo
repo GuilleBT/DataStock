@@ -1,0 +1,6 @@
+# Plantilla de configuración de conexión a MySQL para DataStock
+# Copia este fichero a "db.properties" e introduce tus credenciales locales.
+# "db.properties" está excluido de Git por .gitignore para no publicar contraseñas.
+db.url=jdbc:mysql://localhost:3306/datastock?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&useUnicode=true
+db.user=root
+db.password=tu_password_aqui
